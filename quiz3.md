@@ -70,4 +70,88 @@ newdata = as.data.frame(t(colMeans(olive)))
 What is the resulting prediction? Is the resulting prediction strange? Why or why not?
 
 ### Solution to Question 3
+```
+library(pgmm)
+data(olive)
+dim(olive)
+head(olive)
+olive <- olive[,-1]
+treeModel <- train(Area ~ ., data=olive, method="rpart2")
+treeModel
+newdata <- as.data.frame(t(colMeans(olive)))
+predict(treeModel, newdata)
 
+2.783. It is strange because Area should be a qualitative variable - but tree is reporting the average value of Area as a numeric variable in the leaf predicted for newdata
+```
+
+
+## Question 4
+Load the South Africa Heart Disease Data and create training and test sets with the following code:
+```
+library(ElemStatLearn)
+data(SAheart)
+set.seed(8484)
+train = sample(1:dim(SAheart)[1],size=dim(SAheart)[1]/2,replace=F)
+trainSA = SAheart[train,]
+testSA = SAheart[-train,]
+```
+Then set the seed to 13234 and fit a logistic regression model (method="glm", be sure to specify family="binomial") with Coronary Heart Disease (chd) as the outcome and age at onset, current alcohol consumption, obesity levels, cumulative tabacco, type-A behavior, and low density lipoprotein cholesterol as predictors. Calculate the misclassification rate for your model using this function and a prediction on the "response" scale:
+```
+missClass = function(values,prediction){sum(((prediction > 0.5)*1) != values)/length(values)}
+What is the misclassification rate on the training set? What is the misclassification rate on the test set?
+```
+
+### Solution to Question 4
+```
+library(ElemStatLearn)
+data(SAheart)
+set.seed(8484)
+train = sample(1:dim(SAheart)[1],size=dim(SAheart)[1]/2,replace=F)
+trainSA = SAheart[train,]
+testSA = SAheart[-train,]
+set.seed(13234)
+
+logitModel <- train(chd ~ age + alcohol + obesity + tobacco + 
+                    typea + ldl, data=trainSA, method="glm", 
+                    family="binomial")
+
+missClass = function(values,prediction) {
+  sum(((prediction > 0.5)*1) != values)/length(values)
+  }
+
+predictTrain <- predict(logitModel, trainSA)
+predictTest <- predict(logitModel, testSA)
+
+missClass(trainSA$chd, predictTrain)
+missClass(testSA$chd, predictTest)
+```
+
+
+## Question 5
+Load the vowel.train and vowel.test data sets:
+```
+library(ElemStatLearn)
+data(vowel.train)
+data(vowel.test) 
+```
+Set the variable y to be a factor variable in both the training and test set. Then set the seed to 33833. Fit a random forest predictor relating the factor variable y to the remaining variables. Read about variable importance in random forests here: http://www.stat.berkeley.edu/~breiman/RandomForests/cc_home.htm#ooberr The caret package uses by defualt the Gini importance. Calculate the variable importance using the varImp function in the caret package. What is the order of variable importance?
+
+### Solution to Question 5
+```
+library(ElemStatLearn)
+data(vowel.train)
+data(vowel.test)
+head(vowel.train)
+head(vowel.test)
+dim(vowel.train) 
+dim(vowel.test)
+vowel.train$y <- as.factor(vowel.train$y)
+vowel.test$y <- as.factor(vowel.test$y)
+set.seed(33833)
+modelRf <- train(y ~ ., data = vowel.train, method = "rf")
+order(, decreasing=T)
+
+modelRf <- randomForest(y ~ ., data = vowel.train, importance = FALSE)
+order(varImp(modelRf), decreasing=T)
+modelRf$varImp
+```
