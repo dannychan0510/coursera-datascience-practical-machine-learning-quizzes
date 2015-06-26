@@ -98,8 +98,9 @@ testSA = SAheart[-train,]
 Then set the seed to 13234 and fit a logistic regression model (method="glm", be sure to specify family="binomial") with Coronary Heart Disease (chd) as the outcome and age at onset, current alcohol consumption, obesity levels, cumulative tabacco, type-A behavior, and low density lipoprotein cholesterol as predictors. Calculate the misclassification rate for your model using this function and a prediction on the "response" scale:
 ```
 missClass = function(values,prediction){sum(((prediction > 0.5)*1) != values)/length(values)}
-What is the misclassification rate on the training set? What is the misclassification rate on the test set?
 ```
+What is the misclassification rate on the training set? What is the misclassification rate on the test set?
+
 
 ### Solution to Question 4
 ```
@@ -124,6 +125,11 @@ predictTest <- predict(logitModel, testSA)
 
 missClass(trainSA$chd, predictTrain)
 missClass(testSA$chd, predictTest)
+
+> missClass(trainSA$chd, predictTrain)
+[1] 0.2727273
+> missClass(testSA$chd, predictTest)
+[1] 0.3116883
 ```
 
 
